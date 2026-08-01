@@ -83,6 +83,7 @@ window.addEventListener("keydown", (e) => {
     if (e.key.toLowerCase() === "r") {
         gun.recarregar();
     }
+
 });
 
 
