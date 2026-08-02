@@ -134,7 +134,6 @@ export class Player {
     }
     // metodo que faz o desenho do player e suas informações na tela
     draw(mouse) {
-        const px = LARGURA / 2;
         const py = ALTURA  / 2;
 
         // Pega a spritesheet do estado atual
@@ -144,7 +143,8 @@ export class Player {
         const frameW  = 32;
         const frameH  = 32;
         const col = this.animacao.frame % colunas;
-        const row = Math.floor(this.animacao.frame / colunas);
+        const row = Math.floor(this.animacao.frame / colunas);const px = LARGURA / 2;
+        
 
         // PLAYER
         ctx.save();
