@@ -15,6 +15,8 @@ import {
 import {
     initUI,
     updateTimer,
+    pausarTimer,
+    retomarTimer,
     drawTimer,
     drawGameOver,
     drawMenu,
@@ -100,31 +102,31 @@ let ultimoFrame = 0;
 // GAME LOOP
 // ─────────────────────────────
 
-function gameLoop(timestamp) {
+let estavaParado = false;
 
+function gameLoop(timestamp) {
     const deltaTime = (timestamp - ultimoFrame) / 1000;
     ultimoFrame = timestamp;
 
     ctx.clearRect(0, 0, LARGURA, ALTURA);
 
-    // MENU
     if (!jogoIniciado) {
-        if (mostrandoControles) {
-            drawControls();
-        } else {
-            drawMenu();
-        }
-
+        if (mostrandoControles) drawControls();
+        else drawMenu();
         requestAnimationFrame(gameLoop);
         return;
     }
 
-    // ─────────────────────────────
-    // PAUSA
-    // ─────────────────────────────
-    const paused =
-        player.hp <= 0 ||
-        upgradeState.escolhendoUpgrade;
+    const paused = player.hp <= 0 || upgradeState.escolhendoUpgrade;
+
+    // Só chama pausar/retomar quando o estado muda
+    if (paused && !estavaParado) {
+        pausarTimer();
+        estavaParado = true;
+    } else if (!paused && estavaParado) {
+        retomarTimer();
+        estavaParado = false;
+    }
 
     if (!paused) {
         player.update(deltaTime, mouse);
@@ -133,6 +135,7 @@ function gameLoop(timestamp) {
         gun.update(deltaTime, angulo);
         updateTimer(spawnEnemy);
     }
+
 
     // ─────────────────────────────
     // DRAW

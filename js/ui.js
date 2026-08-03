@@ -13,6 +13,8 @@ export let intervalSpawn = null;
 let tMorte = 0;
 let tInicio = Date.now();
 let tJogo = 0;
+let tPausaInicio = 0;
+let tTotalPausado = 0;
 
 const img = {
     menu: new Image(),
@@ -62,16 +64,26 @@ const tempo = () => {
 
 // ── TIMER ─────────────────────────────
 
+export function pausarTimer() {
+    tPausaInicio = Date.now();
+}
+
+export function retomarTimer() {
+    if (tPausaInicio === 0) return;
+    tTotalPausado += Date.now() - tPausaInicio;
+    tPausaInicio = 0;
+}
+
+
 export function updateTimer(spawnEnemy) {
     if (!jogoIniciado || player.hp <= 0) return;
-
-    tJogo = Math.floor((Date.now() - tInicio) / 1000);
+    // Desconta o tempo total que ficou pausado
+    tJogo = Math.floor((Date.now() - tInicio - tTotalPausado) / 1000);
 
     const n = Math.max(500, 1500 - Math.floor(tJogo / 60) * 3000);
 
     if (n !== taxaSpawn) {
         taxaSpawn = n;
-
         clearInterval(intervalSpawn);
         intervalSpawn = setInterval(spawnEnemy, n);
     }
@@ -152,10 +164,12 @@ export function iniciarJogo(spawnEnemy) {
 }
 
 export function reiniciarJogo(spawnEnemy) {
+
     tMorte = 0;
     tInicio = Date.now();
     tJogo = 0;
-    player.level = 1;
+    tPausaInicio = 0;   // <- adiciona
+    tTotalPausado = 0;  // <- adiciona
     taxaSpawn = 2500;
 
     Object.assign(player, { x: 0, y: 0, hp: 100, ultimoDano: 0 , ataque: 10, maxHp: 100, speed: 1, level: 1, xp: 0, xpProximoLevel: 100,});
