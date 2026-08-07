@@ -18,7 +18,7 @@ export class Smg extends Gun {
         super();
         this.dano        = 2;
         this.sprite      = 50;
-        this.spriteRecoil = 30;
+        this.spriteRecoil = 35;
         this.cadencia    = 200;
         this.balas       = 20;
         this.maxBalas    = 20;

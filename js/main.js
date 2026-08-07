@@ -1,4 +1,4 @@
-import { ctx, canvas, drawMap, LARGURA, ALTURA } from './map.js';
+import { ctx, canvas, drawMap, LARGURA, ALTURA, drawStones } from './map.js';
 import { player } from './Models/Player.js';
 import { updateEnemies, drawEnemies } from './Models/Enemy.js';
 import { angulo, mouse } from './Models/Gun.js';
@@ -135,7 +135,7 @@ function gameLoop(timestamp) {
     if (!paused) {
         player.update(deltaTime, mouse);
         updateBullets(deltaTime);
-        //updateEnemies(deltaTime);
+        updateEnemies(deltaTime);
         updateProps(deltaTime);
         player.weapon.update(deltaTime, angulo);
         updateTimer(spawnEnemy);
@@ -155,9 +155,11 @@ function gameLoop(timestamp) {
     drawProps();
 
     player.draw(mouse);
-
     player.weapon.draw();
     player.weapon.drawBarra();
+    drawStones(player.x, player.y);
+
+   
 
     drawTimer();
 

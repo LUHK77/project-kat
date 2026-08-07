@@ -1,4 +1,5 @@
 // js/map.js
+import { Stone } from './Map/Stone.js';
 import { hash2D, novaSeed } from './utils/hash.js';
 // Pega o canvas do HTML e o contexto 2D pra desenhar
 export const canvas = document.getElementById("canvas");
@@ -33,9 +34,6 @@ imgSolo[0].src = "assets/map/sprite_0.png";
 imgSolo[1].src = "assets/map/sprite_1.png";
 imgSolo[2].src = "assets/map/sprite_2.png";
 
-// Sprite da pedra
-const imgStone = new Image();
-imgStone.src = "assets/map/pedra_0.png";
 
 // Tamanho de cada tile em pixels
 export const blocoTamanho = 64;
@@ -86,10 +84,30 @@ export function registrarAreaEspecial(tileX, tileY, widthTiles, heightTiles, roo
     areasEspeciais.push({ tileX, tileY, widthTiles, heightTiles, room});
 }
 
+export function drawStones(playerX, playerY) {
+
+    const camX = playerX - LARGURA / 2;
+    const camY = playerY - ALTURA  / 2;
+
+    const firstTileX = Math.floor(camX / blocoTamanho);
+    const firstTileY = Math.floor(camY / blocoTamanho);
+    const lastTileX  = firstTileX + Math.ceil(LARGURA / blocoTamanho) + 1;
+    const lastTileY  = firstTileY + Math.ceil(ALTURA  / blocoTamanho) + 1;
+
+    for (let y = firstTileY; y <= lastTileY; y++) {
+        for (let x = firstTileX; x <= lastTileX; x++) {
+            if (geraBloco(x, y) === "stone") {
+                new Stone(x, y).draw();
+            }
+        }
+    }
+}
+
 /**
  * Retorna true se o tile na posição (tileX, tileY) bloqueia movimento.
  * Usado pela colisão do player e dos inimigos.
  */
+
 export function ehSolido(tileX, tileY) {
 
     for (const area of areasEspeciais) {
@@ -100,29 +118,46 @@ export function ehSolido(tileX, tileY) {
             return false;
         }
     }
-
-    return geraBloco(tileX, tileY) === "stone";
+    return false;
 }
 
 // nova função — colisão real (pixel a pixel) contra objetos sólidos das salas
 export function colideComObjetosSolidos(x, y, size) {
+
     const left   = x - size / 2;
     const right  = x + size / 2;
     const top    = y - 12 - size / 2;
     const bottom = y + 12 + size / 2;
 
+    function colideComHitbox(hb) {
+        return !(
+            right  <= hb.x ||
+            left   >= hb.x + hb.width ||
+            bottom <= hb.y ||
+            top    >= hb.y + hb.height
+        );
+    }
+
+    // objetos sólidos das salas (baú, etc.)
     for (const area of areasEspeciais) {
         for (const obj of area.room.getSolidObjects()) {
-            const hb = obj.getHitbox();
-            const colide = !(
-                right  <= hb.x ||
-                left   >= hb.x + hb.width ||
-                bottom <= hb.y ||
-                top    >= hb.y + hb.height
-            );
-            if (colide) return true;
+            if (colideComHitbox(obj.getHitbox())) return true;
         }
     }
+
+    // pedras do mundo infinito, só nas vizinhanças de (x, y)
+    const tileX = Math.floor(x / blocoTamanho);
+    const tileY = Math.floor(y / blocoTamanho);
+
+    for (let ty = tileY - 1; ty <= tileY + 1; ty++) {
+        for (let tx = tileX - 1; tx <= tileX + 1; tx++) {
+
+            if (geraBloco(tx, ty) !== "stone") continue;
+
+            if (colideComHitbox(new Stone(tx, ty).getHitbox())) return true;
+        }
+    }
+
     return false;
 }
 
@@ -132,11 +167,10 @@ export function colideComObjetosSolidos(x, y, size) {
  * na tela e desenha só eles, ignorando o resto do mundo.
  */
 export function drawMap(playerX, playerY) {
-    // Posição do canto superior esquerdo da câmera no mundo
+
     const camX = playerX - LARGURA / 2;
     const camY = playerY - ALTURA  / 2;
 
-    // Índices dos tiles visíveis na tela
     const firstTileX = Math.floor(camX / blocoTamanho);
     const firstTileY = Math.floor(camY / blocoTamanho);
     const lastTileX  = firstTileX + Math.ceil(LARGURA / blocoTamanho) + 1;
@@ -144,17 +178,14 @@ export function drawMap(playerX, playerY) {
 
     for (let y = firstTileY; y <= lastTileY; y++) {
         for (let x = firstTileX; x <= lastTileX; x++) {
-            // Posição do tile na tela em pixels
-            const screenX = x * blocoTamanho - camX;
-            const screenY = y * blocoTamanho - camY;
+
             const tile = geraBloco(x, y);
 
             if (tile === "grass") {
-                // Variação aleatória de sprite baseada na posição — sempre a mesma pra mesma posição
+                const screenX = x * blocoTamanho - camX;
+                const screenY = y * blocoTamanho - camY;
                 const variacao = hash2D(x, y) % 3;
                 ctx.drawImage(imgSolo[variacao], screenX, screenY, blocoTamanho, blocoTamanho);
-            } else {
-                ctx.drawImage(imgStone, screenX, screenY, blocoTamanho, blocoTamanho);
             }
         }
     }
