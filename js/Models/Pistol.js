@@ -23,7 +23,7 @@ export class Pistol extends Gun {
         this.balas       = 6;
         this.maxBalas    = 6;
         this.tempoRecarga = 1500;
-        this.tamanhoBalas = 40;
+        this.tamanhoBalas = 60;
 
         // Colunas e tamanho de frame de cada spritesheet
         this.colunas = 3; // ajusta conforme sua spritesheet

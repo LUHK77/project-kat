@@ -23,7 +23,7 @@ export class Smg extends Gun {
         this.balas       = 20;
         this.maxBalas    = 20;
         this.tempoRecarga = 2500;
-        this.tamanhoBalas = 30;
+        this.tamanhoBalas = 40;
 
         // Colunas e tamanho de frame de cada spritesheet
         this.colunas = 3; // ajusta conforme sua spritesheet

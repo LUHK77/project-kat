@@ -160,7 +160,7 @@ function gameLoop(timestamp) {
     drawStones(player.x, player.y);
 
    
-
+    player.drawHUD();
     drawTimer();
 
     if (player.hp <= 0) {

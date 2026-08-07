@@ -1,6 +1,7 @@
 // js/Models/Player.js
 import { ctx, blocoTamanho, ehSolido, LARGURA, ALTURA, colideComObjetosSolidos } from '../map.js';
 import { abrirUpgrade } from '../upgradeUI.js';
+import { desenharSombra } from '../utils/desenharSombras.js';
 import { pistol } from './Pistol.js';
 
 const retrato = new Image();
@@ -144,25 +145,31 @@ export class Player {
     }
     // metodo que faz o desenho do player e suas informações na tela
     draw(mouse) {
-        const py = ALTURA  / 2;
+        const py = ALTURA / 2;
+        const px = LARGURA / 2;
 
-        // Pega a spritesheet do estado atual
         const spritesheet = Player.SPRITESHEETS()[this.estado];
 
         const colunas = 3;
         const frameW  = 32;
         const frameH  = 32;
         const col = this.animacao.frame % colunas;
-        const row = Math.floor(this.animacao.frame / colunas);const px = LARGURA / 2;
-        
+        const row = Math.floor(this.animacao.frame / colunas);
 
-        // PLAYER
+        desenharSombra(ctx, px - this.sprite / 2, py - this.sprite / 2, this.sprite, {
+            larguraFator: 0.25,
+            alturaFator: 0.08,
+            offsetY: 0.95
+        });
+
         ctx.save();
         ctx.translate(px, py);
         if (mouse.x < px) ctx.scale(-1, 1);
         ctx.drawImage(spritesheet, col * frameW, row * frameH, frameW, frameH, -this.sprite / 2, -this.sprite / 2, this.sprite, this.sprite);
         ctx.restore();
+    }   
 
+    drawHUD() {
         // RETRATO
         ctx.drawImage(retrato, this.retrato.x, this.retrato.y, this.retrato.w, this.retrato.h);
         ctx.strokeStyle = "white";
