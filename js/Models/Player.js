@@ -1,6 +1,7 @@
 // js/Models/Player.js
-import { ctx, blocoTamanho, ehSolido, LARGURA, ALTURA } from '../map.js';
+import { ctx, blocoTamanho, ehSolido, LARGURA, ALTURA, colideComObjetosSolidos } from '../map.js';
 import { abrirUpgrade } from '../upgradeUI.js';
+import { pistol } from './Pistol.js';
 
 const retrato = new Image();
 retrato.src = "assets/player/PlayerIcon.png";
@@ -60,6 +61,9 @@ export class Player {
             velocidade: 3,
         };
 
+        //Arma inicial do player
+        this.weapon = pistol;
+
         this.keys = {};
         window.addEventListener("keydown", (e) => { this.keys[e.key.toLowerCase()] = true;});
         window.addEventListener("keyup", (e) => {this.keys[e.key.toLowerCase()] = false;});
@@ -83,15 +87,21 @@ export class Player {
         this.xp += qtd;
         if (this.xp >= this.xpProximoLevel) this.levelUp();
     }
+    // equipa uma arma diferente
+    equipWeapon(weapon) {
+    this.weapon = weapon;
+    }
     // metodo de verificação de colisão do player
     bateu(x, y) {
-        const e = Math.floor((x - this.size / 2) / blocoTamanho);
-        const d = Math.floor((x + this.size / 2) / blocoTamanho);
-        const c = Math.floor((y - 12 - this.size / 2) / blocoTamanho);
-        const b = Math.floor((y + 12 + this.size / 2) / blocoTamanho);
+    const e = Math.floor((x - this.size / 2) / blocoTamanho);
+    const d = Math.floor((x + this.size / 2) / blocoTamanho);
+    const c = Math.floor((y - 12 - this.size / 2) / blocoTamanho);
+    const b = Math.floor((y + 12 + this.size / 2) / blocoTamanho);
 
-        return ehSolido(e, c) || ehSolido(d, c) || ehSolido(e, b) || ehSolido(d, b);
-    }
+    if (ehSolido(e, c) || ehSolido(d, c) || ehSolido(e, b) || ehSolido(d, b)) return true;
+
+    return colideComObjetosSolidos(x, y, this.size);
+}
 
     updateAnimacao(movendo, dt) {
     this.animacao.timer += dt * 60;

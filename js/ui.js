@@ -1,7 +1,6 @@
 import { ctx, canvas, LARGURA, ALTURA } from './map.js';
 import { player } from './Models/Player.js';
 import { enemies } from './Models/Enemy.js';
-import { gun } from './Models/Pistol.js';
 
 const W = LARGURA, H = ALTURA;
 
@@ -175,8 +174,8 @@ export function reiniciarJogo(spawnEnemy) {
     Object.assign(player, { x: 0, y: 0, hp: 100, ultimoDano: 0 , ataque: 10, maxHp: 100, speed: 1, level: 1, xp: 0, xpProximoLevel: 100,});
     enemies.length = 0;
 
-    Object.assign(gun, {
-        balas: gun.maxBalas,
+    Object.assign(player.weapon, {
+        balas: player.weapon.maxBalas,
         recarregando: false,
         atirando: false,
         ultimoTiro: 0

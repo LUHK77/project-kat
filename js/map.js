@@ -1,11 +1,16 @@
 // js/map.js
-
+import { hash2D, novaSeed } from './utils/hash.js';
 // Pega o canvas do HTML e o contexto 2D pra desenhar
 export const canvas = document.getElementById("canvas");
 export const ctx = canvas.getContext("2d");
 
 // Corrige escala em telas de alto DPI (ex: Retina) — sem isso ficaria borrado
 const dpr = window.devicePixelRatio || 1;
+
+// Seed do mundo: gerada uma vez quando o jogo carrega. É isso que faz o
+// mapa mudar entre uma sessão e outra — sem ela, geraBloco() sempre monta
+// o mesmo mapa (mesmas pedras, sempre nos mesmos lugares).
+const mapSeed = novaSeed();
 
 // Tamanho visual da tela (em pixels CSS)
 export const LARGURA = window.innerWidth;
@@ -56,7 +61,7 @@ export function geraBloco(tileX, tileY) {
     const chunkY = Math.floor(tileY / chunkSize);
 
     // Seed única por chunk baseada na posição dele
-    const seed = Math.abs(chunkX * 37 + chunkY * 71);
+    const seed =  hash2D(chunkX, chunkY, mapSeed);
 
     // Só metade dos chunks terão pedra
     if (seed % 2 !== 0) return "grass";
@@ -73,12 +78,52 @@ export function geraBloco(tileX, tileY) {
     return "grass";
 }
 
+// Áreas de salas especiais (ver Map/Room.js) que sobrescrevem a colisão
+// do terreno procedural — dentro delas o chão é controlado pela própria sala.
+const areasEspeciais = [];
+
+export function registrarAreaEspecial(tileX, tileY, widthTiles, heightTiles, room) {
+    areasEspeciais.push({ tileX, tileY, widthTiles, heightTiles, room});
+}
+
 /**
  * Retorna true se o tile na posição (tileX, tileY) bloqueia movimento.
  * Usado pela colisão do player e dos inimigos.
  */
 export function ehSolido(tileX, tileY) {
+
+    for (const area of areasEspeciais) {
+        if (
+            tileX >= area.tileX && tileX < area.tileX + area.widthTiles &&
+            tileY >= area.tileY && tileY < area.tileY + area.heightTiles
+        ) {
+            return false;
+        }
+    }
+
     return geraBloco(tileX, tileY) === "stone";
+}
+
+// nova função — colisão real (pixel a pixel) contra objetos sólidos das salas
+export function colideComObjetosSolidos(x, y, size) {
+    const left   = x - size / 2;
+    const right  = x + size / 2;
+    const top    = y - 12 - size / 2;
+    const bottom = y + 12 + size / 2;
+
+    for (const area of areasEspeciais) {
+        for (const obj of area.room.getSolidObjects()) {
+            const hb = obj.getHitbox();
+            const colide = !(
+                right  <= hb.x ||
+                left   >= hb.x + hb.width ||
+                bottom <= hb.y ||
+                top    >= hb.y + hb.height
+            );
+            if (colide) return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -106,7 +151,7 @@ export function drawMap(playerX, playerY) {
 
             if (tile === "grass") {
                 // Variação aleatória de sprite baseada na posição — sempre a mesma pra mesma posição
-                const variacao = Math.abs((x * 374761393 + y * 668265263) >>> 0) % 3;
+                const variacao = hash2D(x, y) % 3;
                 ctx.drawImage(imgSolo[variacao], screenX, screenY, blocoTamanho, blocoTamanho);
             } else {
                 ctx.drawImage(imgStone, screenX, screenY, blocoTamanho, blocoTamanho);

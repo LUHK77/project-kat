@@ -1,8 +1,10 @@
 // Bullet.js
 
-import { ctx, blocoTamanho, ehSolido, LARGURA, ALTURA } from '../map.js';
+import { ctx, blocoTamanho, ehSolido, LARGURA, ALTURA, colideComObjetosSolidos } from '../map.js';
 import { player } from './Player.js';
 import { enemies } from './Enemy.js';
+import { HealOrb } from '../Props/HealOrb.js';
+import { props } from '../Props/Prop.js';
 // A classe Bullet representa uma bala no jogo, com propriedades e métodos para movimentação, colisão e desenho
 export class Bullet {
     static sprite = new Image();
@@ -53,7 +55,7 @@ export class Bullet {
             this.x += stepX;
             this.y += stepY;
 
-            if (batuMapa(this.x, this.y)) {
+            if (bateuMapa(this.x, this.y, this.tamanho)) {
                 this.acertou = true;
                 this.timerDano = 0;
                 break;
@@ -76,6 +78,7 @@ export class Bullet {
                         e.ultimoDano = Date.now();
 
                         if (e.hp <= 0) {
+                            e.onDeath();
                             enemies.splice(j, 1);
                             player.ganharXP(e.xp);
                         }
@@ -153,11 +156,11 @@ Bullet.carregarSprite();
 
 const bullets = [];
 
-function batuMapa(x, y) {
+function bateuMapa(x, y, tamanho) {
     const col = Math.floor(x / blocoTamanho);
     const row = Math.floor(y / blocoTamanho);
 
-    return ehSolido(col, row);
+    return ehSolido(col, row) || colideComObjetosSolidos(x, y, tamanho);
 }
 // Função para spawnar uma bala do jogador, criando uma nova instância da classe Bullet e adicionando-a à lista de balas
 export function spawnBullet(

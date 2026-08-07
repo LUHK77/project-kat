@@ -79,6 +79,9 @@ export class Gun {
             this.recarregar();
         }
     }
+    getSprite() {
+    return this.constructor.spriteIdle;
+    }
 
     // Atualiza o estado da arma, incluindo animação, recarga e disparo automático
     update(deltaTime, angulo) {

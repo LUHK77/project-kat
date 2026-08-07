@@ -1,10 +1,11 @@
 import { ctx, canvas, drawMap, LARGURA, ALTURA } from './map.js';
 import { player } from './Models/Player.js';
 import { updateEnemies, drawEnemies } from './Models/Enemy.js';
-import { gun } from './Models/Pistol.js';
 import { angulo, mouse } from './Models/Gun.js';
 import { updateBullets, drawBullets } from './Models/Bullet.js';
 import { spawnEnemy } from './spawner.js';
+
+import { updateMap, drawMapObjects } from './Map/MapManager.js';
 
 import {
     state as upgradeState,
@@ -24,6 +25,7 @@ import {
     mostrandoControles,
     jogoIniciado
 } from './ui.js';
+import { drawProps, updateProps } from './Props/Prop.js';
 
 /* Serve para suavizar a imagem quando é chamado,  
 porem no caso ele acaba dando um bloor na imagem, por isso sera destivado */
@@ -51,27 +53,27 @@ window.addEventListener("mousedown", (e) => {
         my <= p.y + p.h
     ) {
         upgradeState.escolhendoUpgrade = true;
-        gun.segurando = false;
+        player.weapon.segurando = false;
         return;
     }
 
     // clique no upgrade
     if (upgradeState.escolhendoUpgrade) {
         handleUpgradeClick(mx, my);
-        gun.segurando = false;
+        player.weapon.segurando = false;
         return;
     }
 
     // tiro normal
-    gun.segurando = true;
+    player.weapon.segurando = true;
 });
 
 window.addEventListener("mouseup", () => {
-    gun.segurando = false;
+    player.weapon.segurando = false;
 });
 
 window.addEventListener("blur", () => {
-    gun.segurando = false;
+    player.weapon.segurando = false;
 });
 
 window.addEventListener("keydown", (e) => {
@@ -83,7 +85,7 @@ window.addEventListener("keydown", (e) => {
 
     // reload
     if (e.key.toLowerCase() === "r") {
-        gun.recarregar();
+        player.weapon.recarregar();
     }
 
 });
@@ -94,6 +96,8 @@ window.addEventListener("keydown", (e) => {
 // ─────────────────────────────
 
 initUI(spawnEnemy);
+
+// Sala especial fixa: fica a 20 tiles de distância do spawn (a área segura do spawn é só 5x5)
 
 let ultimoFrame = 0;
 
@@ -131,9 +135,11 @@ function gameLoop(timestamp) {
     if (!paused) {
         player.update(deltaTime, mouse);
         updateBullets(deltaTime);
-        updateEnemies(deltaTime);
-        gun.update(deltaTime, angulo);
+        //updateEnemies(deltaTime);
+        updateProps(deltaTime);
+        player.weapon.update(deltaTime, angulo);
         updateTimer(spawnEnemy);
+        updateMap();
     }
 
 
@@ -142,13 +148,16 @@ function gameLoop(timestamp) {
     // ─────────────────────────────
 
     drawMap(player.x, player.y);
+    drawMapObjects();
+
     drawEnemies();
     drawBullets();
+    drawProps();
 
     player.draw(mouse);
 
-    gun.draw();
-    gun.drawBarra();
+    player.weapon.draw();
+    player.weapon.drawBarra();
 
     drawTimer();
 

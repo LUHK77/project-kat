@@ -69,4 +69,4 @@ export class Pistol extends Gun {
 }
 
 Pistol.carregarSprites();
-export const gun = new Pistol();
+export const pistol = new Pistol();

@@ -1,5 +1,7 @@
 // js/Models/Enemy.js
-import { ctx, blocoTamanho, ehSolido, LARGURA, ALTURA } from '../map.js';
+import { ctx, blocoTamanho, ehSolido, LARGURA, ALTURA, colideComObjetosSolidos } from '../map.js';
+import { HealOrb } from '../Props/HealOrb.js';
+import { props } from '../Props/Prop.js';
 import { player } from './Player.js';
 
 export const ESTADOS = {
@@ -29,22 +31,30 @@ export class Enemy {
         this.ultimoDano = 0;
         this.timerDano = 0;
     }
+
+    onDeath() {
+    if (Math.random() < 0.08) props.push(new HealOrb(this.x, this.y));
+    }
+
     // Verifica se o inimigo colidiu com o mapa ou com o jogador, retornando true se houver colisão
     bateu(x, y) {
-        const esquerda = Math.floor((x - this.size / 2) / blocoTamanho);
-        const direita  = Math.floor((x + this.size / 2) / blocoTamanho);
-        const cima     = Math.floor((y - 12 - this.size / 2) / blocoTamanho);
-        const baixo    = Math.floor((y + 12 + this.size / 2) / blocoTamanho);
+    const esquerda = Math.floor((x - this.size / 2) / blocoTamanho);
+    const direita  = Math.floor((x + this.size / 2) / blocoTamanho);
+    const cima     = Math.floor((y - 12 - this.size / 2) / blocoTamanho);
+    const baixo    = Math.floor((y + 12 + this.size / 2) / blocoTamanho);
 
-        return (
-            ehSolido(esquerda, cima)  ||
-            ehSolido(direita,  cima)  ||
-            ehSolido(esquerda, baixo) ||
-            ehSolido(direita,  baixo) ||   
-            (Math.abs(player.x - x) < (player.size / 2.8) + (this.size / 2) &&
-             Math.abs(player.y - y) < (player.size / 2.8) + (this.size / 2))
-        );
-    }
+    const bateuNoTerreno =
+        ehSolido(esquerda, cima)  ||
+        ehSolido(direita,  cima)  ||
+        ehSolido(esquerda, baixo) ||
+        ehSolido(direita,  baixo);
+
+    const bateuNoPlayer =
+        Math.abs(player.x - x) < (player.size / 2.8) + (this.size / 2) &&
+        Math.abs(player.y - y) < (player.size / 2.8) + (this.size / 2);
+
+    return bateuNoTerreno || bateuNoPlayer || colideComObjetosSolidos(x, y, this.size);
+}
     // Atualiza a animação do inimigo, avançando o frame com base no tempo decorrido
     updateAnimacao(deltaTime) {
     this.animacao.timer += deltaTime * 60;
