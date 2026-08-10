@@ -4,7 +4,7 @@ export function desenharSombra(ctx, x, y, spriteSize, {
     larguraFator = 0.48,
     alturaFator = 0.10,
     offsetY = 0.88,
-    opacidade = 0.35
+    opacidade = 0.35,
 } = {}) {
 
     ctx.fillStyle = `rgba(0,0,0,${opacidade})`;

@@ -5,7 +5,7 @@ export const ESTADOS_JOGO = {
     MENU:       'menu',
     JOGANDO:    'jogando',
     PAUSADO:    'pausado',
-    SALA:       'sala',      // player dentro de sala especial
+    SALA:       'sala',      
     GAME_OVER:  'game_over'
 };
 

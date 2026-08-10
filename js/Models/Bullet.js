@@ -36,6 +36,7 @@ export class Bullet {
         this.acertou = false;
         this.timerDano = 0;
     }
+
     // Atualiza a posição da bala com base na direção e velocidade, verificando colisões com o mapa e inimigos/jogador
     update(deltaTime) {
         if (this.acertou) {
@@ -109,6 +110,20 @@ export class Bullet {
 
             if (this.acertou) break;
         }
+    }
+
+    drawImpactBullet(x, y, camX, camY) {
+    const progresso = 1 - (this.timerDano / 40);
+    const opacidade = 1 - progresso;
+    const raio = 2 + progresso * 6;
+
+    ctx.beginPath();
+    ctx.arc(x - camX, y - camY, raio, 0, Math.PI * 2);
+    ctx.strokeStyle = this.owner === player
+        ? `rgba(255, 255, 0, ${opacidade})`
+        : `rgba(255, 80, 80, ${opacidade})`;
+    ctx.lineWidth = 3;
+    ctx.stroke();
     }
     // Desenha a bala na tela, aplicando a rotação correta com base na direção da bala e exibindo o dano causado se a bala acertou um alvo
     draw(camX, camY) {

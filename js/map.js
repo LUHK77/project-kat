@@ -1,5 +1,6 @@
 // js/map.js
 import { Stone } from './Map/Stone.js';
+import { Tree } from './Map/Tree.js';
 import { hash2D, novaSeed } from './utils/hash.js';
 // Pega o canvas do HTML e o contexto 2D pra desenhar
 export const canvas = document.getElementById("canvas");
@@ -29,6 +30,12 @@ canvas.style.height = ALTURA  + "px";
 ctx.scale(dpr, dpr);
 
 // Sprites das gramas
+const imgFloor = new Image();
+imgFloor.src = "assets/map/floor.webp";
+
+const FLOOR_FRAME_SIZE = 32;
+const FLOOR_FRAME_COLS = 2;
+
 const imgSolo = [new Image(), new Image(), new Image()];
 imgSolo[0].src = "assets/map/sprite_0.png";
 imgSolo[1].src = "assets/map/sprite_1.png";
@@ -65,14 +72,14 @@ export function geraBloco(tileX, tileY) {
     if (seed % 2 !== 0) return "grass";
 
     // Posição da pedra dentro do chunk (determinística pela seed)
-    const pedraX = seed % chunkSize;
-    const pedraY = Math.floor(seed / chunkSize) % chunkSize;
+    const objectX = seed % chunkSize;
+    const objectY = Math.floor(seed / chunkSize) % chunkSize;
 
     // Posição local do tile dentro do chunk
     const localX = ((tileX % chunkSize) + chunkSize) % chunkSize;
     const localY = ((tileY % chunkSize) + chunkSize) % chunkSize;
 
-    if (localX === pedraX && localY === pedraY) return "stone";
+    if (localX === objectX && localY === objectY) return "object";
     return "grass";
 }
 
@@ -82,6 +89,13 @@ const areasEspeciais = [];
 
 export function registrarAreaEspecial(tileX, tileY, widthTiles, heightTiles, room) {
     areasEspeciais.push({ tileX, tileY, widthTiles, heightTiles, room});
+}
+
+function makeObject(tileX, tileY) {
+    const seed = hash2D(tileX, tileY);
+    return (seed % 100 < 80)
+        ? new Stone(tileX, tileY)
+        : new Tree(tileX, tileY);
 }
 
 export function drawStones(playerX, playerY) {
@@ -96,8 +110,8 @@ export function drawStones(playerX, playerY) {
 
     for (let y = firstTileY; y <= lastTileY; y++) {
         for (let x = firstTileX; x <= lastTileX; x++) {
-            if (geraBloco(x, y) === "stone") {
-                new Stone(x, y).draw();
+            if (geraBloco(x, y) === "object") {
+                makeObject(x, y).draw();
             }
         }
     }
@@ -152,9 +166,9 @@ export function colideComObjetosSolidos(x, y, size) {
     for (let ty = tileY - 1; ty <= tileY + 1; ty++) {
         for (let tx = tileX - 1; tx <= tileX + 1; tx++) {
 
-            if (geraBloco(tx, ty) !== "stone") continue;
+            if (geraBloco(tx, ty) !== "object") continue;
 
-            if (colideComHitbox(new Stone(tx, ty).getHitbox())) return true;
+            if (colideComHitbox(makeObject(tx, ty).getHitbox())) return true;
         }
     }
 
@@ -179,14 +193,27 @@ export function drawMap(playerX, playerY) {
     for (let y = firstTileY; y <= lastTileY; y++) {
         for (let x = firstTileX; x <= lastTileX; x++) {
 
+            const screenX = x * blocoTamanho - camX;
+            const screenY = y * blocoTamanho - camY;
             const tile = geraBloco(x, y);
 
             if (tile === "grass") {
-                const screenX = x * blocoTamanho - camX;
-                const screenY = y * blocoTamanho - camY;
+
                 const variacao = hash2D(x, y) % 3;
-                ctx.drawImage(imgSolo[variacao], screenX, screenY, blocoTamanho, blocoTamanho);
+                const col = variacao % FLOOR_FRAME_COLS;
+                const row = Math.floor(variacao / FLOOR_FRAME_COLS);
+
+                ctx.drawImage(
+                    imgFloor,
+                    col * FLOOR_FRAME_SIZE,
+                    row * FLOOR_FRAME_SIZE,
+                    FLOOR_FRAME_SIZE,
+                    FLOOR_FRAME_SIZE,
+                    screenX, screenY,
+                    blocoTamanho, blocoTamanho
+                );
             }
+            // "object" (pedra/árvore) não desenha aqui — já é o drawStones()
         }
     }
 }
