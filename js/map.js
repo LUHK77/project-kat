@@ -31,15 +31,11 @@ ctx.scale(dpr, dpr);
 
 // Sprites das gramas
 const imgFloor = new Image();
-imgFloor.src = "assets/map/floor.webp";
+imgFloor.src = "assets/map/floorNew2.webp";
 
 const FLOOR_FRAME_SIZE = 32;
-const FLOOR_FRAME_COLS = 2;
+const FLOOR_FRAME_COLS = 4;
 
-const imgSolo = [new Image(), new Image(), new Image()];
-imgSolo[0].src = "assets/map/sprite_0.png";
-imgSolo[1].src = "assets/map/sprite_1.png";
-imgSolo[2].src = "assets/map/sprite_2.png";
 
 
 // Tamanho de cada tile em pixels
@@ -210,7 +206,7 @@ export function drawMap(playerX, playerY) {
                     FLOOR_FRAME_SIZE,
                     FLOOR_FRAME_SIZE,
                     screenX, screenY,
-                    blocoTamanho, blocoTamanho
+                    blocoTamanho, blocoTamanho  
                 );
             }
             // "object" (pedra/árvore) não desenha aqui — já é o drawStones()

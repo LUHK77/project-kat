@@ -24,7 +24,7 @@ export class Stone extends WorldObject {
 
         super(worldX, worldY);
 
-        this.spriteSize = blocoTamanho * 2;
+        this.spriteSize = blocoTamanho * 2.5;
 
         // variação determinística — mesma pedra sempre com a mesma variação
         this.variacao = hash2D(tileX, tileY) % 3;
