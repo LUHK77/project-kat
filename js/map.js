@@ -31,10 +31,10 @@ ctx.scale(dpr, dpr);
 
 // Sprites das gramas
 const imgFloor = new Image();
-imgFloor.src = "assets/map/floorNew2.webp";
+imgFloor.src = "assets/map/soloFloor4.webp";
 
 const FLOOR_FRAME_SIZE = 32;
-const FLOOR_FRAME_COLS = 4;
+const FLOOR_FRAME_COLS = 2;
 
 
 
@@ -195,7 +195,7 @@ export function drawMap(playerX, playerY) {
 
             if (tile === "grass") {
 
-                const variacao = hash2D(x, y) % 3;
+                const variacao = hash2D(x, y) % 4;
                 const col = variacao % FLOOR_FRAME_COLS;
                 const row = Math.floor(variacao / FLOOR_FRAME_COLS);
 
@@ -206,7 +206,7 @@ export function drawMap(playerX, playerY) {
                     FLOOR_FRAME_SIZE,
                     FLOOR_FRAME_SIZE,
                     screenX, screenY,
-                    blocoTamanho, blocoTamanho  
+                    blocoTamanho * 1.1, blocoTamanho * 1.1
                 );
             }
             // "object" (pedra/árvore) não desenha aqui — já é o drawStones()
