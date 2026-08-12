@@ -43,6 +43,9 @@ export class Player {
         this.pontosUpgrade = 0;
         this.estado = ESTADOS.IDLE;
 
+        this.knockbackVX = 0;
+        this.knockbackVY = 0;
+
         this.speed = 1;
         this.hp = 100;
         this.maxHp = 100;
@@ -142,6 +145,18 @@ export class Player {
 
         const ny = this.y + dy * vel;
         if (!this.bateu(this.x, ny)) this.y = ny;
+
+        // aplica knockback, se houver
+        if (Math.abs(this.knockbackVX) > 0.01 || Math.abs(this.knockbackVY) > 0.01) {
+        const kx = this.x + this.knockbackVX;
+        const ky = this.y + this.knockbackVY;
+
+        if (!this.bateu(kx, this.y)) this.x = kx;
+        if (!this.bateu(this.x, ky)) this.y = ky;
+
+        this.knockbackVX *= 0.85;
+        this.knockbackVY *= 0.85;
+        }
     }
     // metodo que faz o desenho do player e suas informações na tela
     draw(mouse) {

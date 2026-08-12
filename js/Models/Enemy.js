@@ -6,7 +6,7 @@ import { player } from './Player.js';
 
 export const ESTADOS = {
     MOVE: 'move',
-    HIT:  'hit'
+    HIT: 'hit'
 };
 
 // A classe Enemy representa um inimigo no jogo, com propriedades e métodos para movimentação, ataque e desenho
@@ -20,7 +20,10 @@ export class Enemy {
         this.sprite = 64;
         this.damage = 10;
         this.hp = 40;
-        
+        this.knockback = 6;
+        this.knockbackVX = 0; 
+        this.knockbackVY = 0; 
+
         // Propriedades de animação do inimigo
         this.animacao = {
             frame: 0,
@@ -33,39 +36,39 @@ export class Enemy {
     }
 
     onDeath() {
-    if (Math.random() < 0.08) props.push(new HealOrb(this.x, this.y));
+        if (Math.random() < 0.08) props.push(new HealOrb(this.x, this.y));
     }
 
     // Verifica se o inimigo colidiu com o mapa ou com o jogador, retornando true se houver colisão
     bateu(x, y) {
-    const esquerda = Math.floor((x - this.size / 2) / blocoTamanho);
-    const direita  = Math.floor((x + this.size / 2) / blocoTamanho);
-    const cima     = Math.floor((y - 12 - this.size / 2) / blocoTamanho);
-    const baixo    = Math.floor((y + 12 + this.size / 2) / blocoTamanho);
+        const esquerda = Math.floor((x - this.size / 2) / blocoTamanho);
+        const direita = Math.floor((x + this.size / 2) / blocoTamanho);
+        const cima = Math.floor((y - 12 - this.size / 2) / blocoTamanho);
+        const baixo = Math.floor((y + 12 + this.size / 2) / blocoTamanho);
 
-    const bateuNoTerreno =
-        ehSolido(esquerda, cima)  ||
-        ehSolido(direita,  cima)  ||
-        ehSolido(esquerda, baixo) ||
-        ehSolido(direita,  baixo);
+        const bateuNoTerreno =
+            ehSolido(esquerda, cima) ||
+            ehSolido(direita, cima) ||
+            ehSolido(esquerda, baixo) ||
+            ehSolido(direita, baixo);
 
-    const bateuNoPlayer =
-        Math.abs(player.x - x) < (player.size / 2.8) + (this.size / 2) &&
-        Math.abs(player.y - y) < (player.size / 2.8) + (this.size / 2);
+        const bateuNoPlayer =
+            Math.abs(player.x - x) < (player.size / 2.8) + (this.size / 2) &&
+            Math.abs(player.y - y) < (player.size / 2.8) + (this.size / 2);
 
-    return bateuNoTerreno || bateuNoPlayer || colideComObjetosSolidos(x, y, this.size);
-}
+        return bateuNoTerreno || bateuNoPlayer || colideComObjetosSolidos(x, y, this.size);
+    }
     // Atualiza a animação do inimigo, avançando o frame com base no tempo decorrido
     updateAnimacao(deltaTime) {
-    this.animacao.timer += deltaTime * 60;
-    if (this.animacao.timer >= this.animacao.velocidade) {
-        this.animacao.timer = 0;
-        this.animacao.frame = (this.animacao.frame + 1) % 9;
-    }
+        this.animacao.timer += deltaTime * 60;
+        if (this.animacao.timer >= this.animacao.velocidade) {
+            this.animacao.timer = 0;
+            this.animacao.frame = (this.animacao.frame + 1) % 9;
+        }
 
-    const piscando = Date.now() - this.ultimoDano < 100;
-    this.estado = piscando ? ESTADOS.HIT : ESTADOS.MOVE;
-}
+        const piscando = Date.now() - this.ultimoDano < 100;
+        this.estado = piscando ? ESTADOS.HIT : ESTADOS.MOVE;
+    }
     // Atualiza a posição e o estado do inimigo, movendo-o em direção ao jogador e aplicando dano se estiver próximo
     update(deltaTime) {
         const dx = player.x - this.x;
@@ -76,6 +79,19 @@ export class Enemy {
 
         if (this.timerDano > 0) this.timerDano--;
 
+        //Calcula o knockback do inimigo
+        if (Math.abs(this.knockbackVX) > 0.01 || Math.abs(this.knockbackVY) > 0.01) {
+        const novoX = this.x + this.knockbackVX;
+        const novoY = this.y + this.knockbackVY;
+
+        if (!this.bateu(novoX, this.y)) this.x = novoX;
+        if (!this.bateu(this.x, novoY)) this.y = novoY;
+
+        // decai a velocidade suavemente a cada frame (85% do valor anterior)
+        this.knockbackVX *= 0.85;
+        this.knockbackVY *= 0.85;
+        }
+
         //Verifica se o inimigo está colidindo com o jogador e aplica dano se necessário
         if (dist < (player.size / 2) + (this.size / 2)) {
             const agora = Date.now();
@@ -83,6 +99,13 @@ export class Enemy {
                 player.hp -= this.damage;
                 player.ultimoDano = agora;
                 this.ultimoAtaque = agora;
+            }
+            // knockback: empurra o player pra longe do inimigo
+            if (dist > 0) {
+            const dirX = (player.x - this.x) / dist;
+            const dirY = (player.y - this.y) / dist;
+            player.knockbackVX = dirX * this.knockback;
+            player.knockbackVY = dirY * this.knockback;
             }
         }
 
@@ -96,7 +119,7 @@ export class Enemy {
         if (!this.bateu(this.x, this.y + vy)) this.y += vy;
     }
     // Função de desenho do inimigo, que deve ser implementada nas subclasses específicas de inimigos
-    draw(camX, camY) {}
+    draw(camX, camY) { }
 }
 
 // ── GERENCIAMENTO ─────────────────────────────────────────────────────────────

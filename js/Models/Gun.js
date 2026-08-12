@@ -26,6 +26,8 @@ export const ESTADOS_GUN = {
 export class Gun {
     constructor() {
         this.dano = 0;
+        this.speedBullet = 2;
+        this.knockback = 3;
         this.sprite = 0;
         this.spriteRecoil = 0;
         this.cadencia = 0;
@@ -73,7 +75,7 @@ export class Gun {
         this.animacao.timer = 0;
 
         // Cria uma bala na direção do ângulo fornecido, com o dano e tamanho especificados
-        spawnBullet(angulo, this.dano, this.tamanhoBalas);
+        spawnBullet(angulo, this.dano, this.speedBullet, this.tamanhoBalas, this.knockback);
 
         if (this.balas <= 0) {
             this.recarregar();

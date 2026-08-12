@@ -15,7 +15,7 @@ export class Bullet {
     }
 
     static BULLET_FRAME_SIZE = 32;
-    static BULLET_FRAMES = 6;   // quantos frames você realmente usa
+    static BULLET_FRAMES = 6;   
     static BULLET_COLS = 2;
 
     static IMPACT_FRAME_SIZE = 32;
@@ -28,7 +28,9 @@ export class Bullet {
         y,
         angulo,
         dano,
+        speed,
         tamanhoSprite,
+        knockback,
         owner = "player"
     ) {
         this.x = x;
@@ -36,9 +38,10 @@ export class Bullet {
 
         this.dx = Math.cos(angulo);
         this.dy = Math.sin(angulo);
-        this.velocidade = 1.5;
+        this.velocidade = speed;
         this.tamanho = 8;
         this.tamanhoSprite = tamanhoSprite || 40;
+        this.knockback = knockback;
 
         this.dano = dano;
         this.owner = owner;
@@ -85,8 +88,11 @@ export class Bullet {
                     );
                     // Se a bala do jogador colidir com um inimigo, aplica o dano da arma somado ao do player
                     if (dist < e.size / 2 + this.tamanho) {
-                        const danoFinal =
-                            this.dano + player.ataque;
+                        const danoFinal = this.dano;
+
+                        const forca = (this.knockback * 50) / e.size;
+                        e.knockbackVX += this.dx * forca;
+                        e.knockbackVY += this.dy * forca;
 
                         e.hp -= danoFinal;
                         e.ultimoDano = Date.now();
@@ -97,7 +103,7 @@ export class Bullet {
                         }
 
                         this.acertou = true;
-                        this.timerDano = 40;
+                        this.timerDano = 10;
                         break;
                     }
                 }
@@ -115,7 +121,7 @@ export class Bullet {
 
                     this.acertou = true;
                     player.ultimoDano = agora;
-                    this.timerDano = 40;
+                    this.timerDano = 10;
                     break;
                 }
             }
@@ -125,7 +131,7 @@ export class Bullet {
     }
 
     drawImpactBullet(camX, camY) {
-        const progresso = 1 - (this.timerDano / 50); // 0 -> 1 ao longo do tempo
+        const progresso = 1 - (this.timerDano / 30); // 0 -> 1 ao longo do tempo
 
         // qual frame mostrar (0 a 5), sem passar do último
         const frame = Math.min(
@@ -166,9 +172,9 @@ export class Bullet {
 
             ctx.font = "bold 14px GamerFonte";
             ctx.fillText(
-                "-" + this.dano,
+                this.dano,
                 this.x - camX,
-                this.y - camY
+                this.y - camY - 30
             );
         } else {
             ctx.save();
@@ -208,18 +214,16 @@ function bateuMapa(x, y, tamanho) {
     return ehSolido(col, row) || colideComObjetosSolidos(x, y, tamanho);
 }
 // Função para spawnar uma bala do jogador, criando uma nova instância da classe Bullet e adicionando-a à lista de balas
-export function spawnBullet(
-    angulo,
-    dano,
-    tamanhoSprite
-) {
+export function spawnBullet(angulo,dano,speed,tamanhoSprite, knockback) {
     bullets.push(
         new Bullet(
             player.x + Math.cos(angulo) * 20,
             player.y + Math.sin(angulo) * 20,
             angulo,
             dano + player.ataque,
+            speed,
             tamanhoSprite,
+            knockback,
             "player"
         )
     );
@@ -230,7 +234,9 @@ export function spawnEnemyBullet(
     y,
     angulo,
     dano = 10,
-    tamanhoSprite = 40
+    speed,
+    tamanhoSprite = 40,
+    knockback,
 ) {
     bullets.push(
         new Bullet(
@@ -238,7 +244,9 @@ export function spawnEnemyBullet(
             y,
             angulo,
             dano,
+            speed,
             tamanhoSprite,
+            knockback,
             "enemy"
         )
     );

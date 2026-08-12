@@ -22,6 +22,7 @@ export class ZombieBird extends Enemy {
         this.damage = 15;
         this.sprite = 64;
         this.xp = 30;
+        this.speedBullet = 0.8;
 
         // ataque à distância
         this.attackCooldown = 2000; // 2 segundos
@@ -61,6 +62,7 @@ export class ZombieBird extends Enemy {
             this.y,
             angulo,
             this.damage,
+            this.speedBullet,
             32
         );
     }
