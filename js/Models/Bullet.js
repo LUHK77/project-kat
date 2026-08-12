@@ -3,8 +3,6 @@
 import { ctx, blocoTamanho, ehSolido, LARGURA, ALTURA, colideComObjetosSolidos } from '../map.js';
 import { player } from './Player.js';
 import { enemies } from './Enemy.js';
-import { HealOrb } from '../Props/HealOrb.js';
-import { props } from '../Props/Prop.js';
 // A classe Bullet representa uma bala no jogo, com propriedades e métodos para movimentação, colisão e desenho
 export class Bullet {
     static sprite = new Image();
@@ -13,11 +11,12 @@ export class Bullet {
     // Carrega os sprites da bala e do impacto, definindo as imagens que serão usadas para desenhar na tela
     static carregarSprite() {
         Bullet.sprite.src = `assets/guns/bullet/sprite_0.png`;
-        Bullet.impactSprite.src = `assets/guns/bullet/impactBullet.webp`;
+        Bullet.impactSprite.src = `assets/guns/bullet/bulletImpact.webp`;
     }
 
     static IMPACT_FRAME_SIZE = 32; // cada frame é 32x32
-    static IMPACT_FRAMES = 6;      // total de frames na sheet
+    static IMPACT_FRAMES = 8;      // total de frames na sheet
+    static COLWS = 3;
 
     // Construtor da classe Bullet, inicializando a posição, direção, velocidade, tamanho e outros atributos da bala
     constructor(
@@ -118,32 +117,31 @@ export class Bullet {
         }
     }
 
-    // Desenha o efeito de impacto (spritesheet) na posição da bala, avançando o frame conforme o timerDano diminui
     drawImpactBullet(camX, camY) {
-        const progresso = 1 - (this.timerDano / 40); // 0 -> 1 ao longo do tempo
+        const progresso = 1 - (this.timerDano / 45); // 0 -> 1 ao longo do tempo
 
         // qual frame mostrar (0 a 5), sem passar do último
         const frame = Math.min(
-            Bullet.IMPACT_FRAMES - 1,
+            Bullet.IMPACT_FRAMES,
             Math.floor(progresso * Bullet.IMPACT_FRAMES)
         );
 
         const screenX = this.x - camX;
         const screenY = this.y - camY;
 
-        const tamanhoDesenho = 32; // tamanho na tela (pode aumentar se quiser maior que o sprite original)
+        const tamanhoDesenho = 50; 
 
         ctx.drawImage(
             Bullet.impactSprite,
-            frame * Bullet.IMPACT_FRAME_SIZE, 0,                 // recorte: x, y na sheet
-            Bullet.IMPACT_FRAME_SIZE, Bullet.IMPACT_FRAME_SIZE,  // tamanho do recorte
-            screenX - tamanhoDesenho / 2,                        // posição de desenho na tela
+            frame * Bullet.IMPACT_FRAME_SIZE, Bullet.COLWS,                 
+            Bullet.IMPACT_FRAME_SIZE, Bullet.IMPACT_FRAME_SIZE,  
+            screenX - tamanhoDesenho / 2,                        
             screenY - tamanhoDesenho / 2,
-            tamanhoDesenho, tamanhoDesenho                       // tamanho de desenho na tela
+            tamanhoDesenho, tamanhoDesenho                       
         );
     }
 
-    // Desenha a bala na tela, aplicando a rotação correta com base na direção da bala e exibindo o dano causado se a bala acertou um alvo
+
     draw(camX, camY) {
         // Se a bala acertou um alvo, desenha o impacto e o dano causado acima da posição da bala
         if (this.acertou) {
