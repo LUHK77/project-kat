@@ -10,13 +10,17 @@ export class Bullet {
 
     // Carrega os sprites da bala e do impacto, definindo as imagens que serão usadas para desenhar na tela
     static carregarSprite() {
-        Bullet.sprite.src = `assets/guns/bullet/sprite_0.png`;
+        Bullet.sprite.src = `assets/guns/bullet/bulletNew.webp`;
         Bullet.impactSprite.src = `assets/guns/bullet/bulletImpact.webp`;
     }
 
-    static IMPACT_FRAME_SIZE = 32; // cada frame é 32x32
-    static IMPACT_FRAMES = 8;      // total de frames na sheet
-    static COLWS = 3;
+    static BULLET_FRAME_SIZE = 32;
+    static BULLET_FRAMES = 6;   // quantos frames você realmente usa
+    static BULLET_COLS = 2;
+
+    static IMPACT_FRAME_SIZE = 32;
+    static IMPACT_FRAMES = 8;
+    static IMPACT_COLS = 3;
 
     // Construtor da classe Bullet, inicializando a posição, direção, velocidade, tamanho e outros atributos da bala
     constructor(
@@ -32,7 +36,7 @@ export class Bullet {
 
         this.dx = Math.cos(angulo);
         this.dy = Math.sin(angulo);
-        this.velocidade = 3;
+        this.velocidade = 1.5;
         this.tamanho = 8;
         this.tamanhoSprite = tamanhoSprite || 40;
 
@@ -41,6 +45,8 @@ export class Bullet {
 
         this.acertou = false;
         this.timerDano = 0;
+        this.frameTimer = 0;
+
     }
 
     // Atualiza a posição da bala com base na direção e velocidade, verificando colisões com o mapa e inimigos/jogador
@@ -49,6 +55,7 @@ export class Bullet {
             this.timerDano--;
             return;
         }
+        this.frameTimer += deltaTime;
 
         const passos = 3;
 
@@ -118,26 +125,29 @@ export class Bullet {
     }
 
     drawImpactBullet(camX, camY) {
-        const progresso = 1 - (this.timerDano / 45); // 0 -> 1 ao longo do tempo
+        const progresso = 1 - (this.timerDano / 50); // 0 -> 1 ao longo do tempo
 
         // qual frame mostrar (0 a 5), sem passar do último
         const frame = Math.min(
-            Bullet.IMPACT_FRAMES,
+            Bullet.IMPACT_FRAMES - 1,
             Math.floor(progresso * Bullet.IMPACT_FRAMES)
         );
+
+        const col = frame % Bullet.IMPACT_COLS;
+        const row = Math.floor(frame / Bullet.IMPACT_COLS);
 
         const screenX = this.x - camX;
         const screenY = this.y - camY;
 
-        const tamanhoDesenho = 50; 
+        const tamanhoDesenho = 50;
 
         ctx.drawImage(
             Bullet.impactSprite,
-            frame * Bullet.IMPACT_FRAME_SIZE, Bullet.COLWS,                 
-            Bullet.IMPACT_FRAME_SIZE, Bullet.IMPACT_FRAME_SIZE,  
-            screenX - tamanhoDesenho / 2,                        
+            col * Bullet.IMPACT_FRAME_SIZE, row * Bullet.IMPACT_FRAME_SIZE, // recorte agora usa linha E coluna
+            Bullet.IMPACT_FRAME_SIZE, Bullet.IMPACT_FRAME_SIZE,
+            screenX - tamanhoDesenho / 2,
             screenY - tamanhoDesenho / 2,
-            tamanhoDesenho, tamanhoDesenho                       
+            tamanhoDesenho, tamanhoDesenho
         );
     }
 
@@ -163,17 +173,19 @@ export class Bullet {
         } else {
             ctx.save();
 
-            ctx.translate(
-                this.x - camX,
-                this.y - camY
-            );
+            ctx.translate(this.x - camX, this.y - camY);
+            ctx.rotate(Math.atan2(this.dy, this.dx));
 
-            ctx.rotate(
-                Math.atan2(this.dy, this.dx)
-            );
+            const velocidadeAnimacao = 15; // frames por segundo (ajuste ao gosto)
+            const frame = Math.floor(this.frameTimer * velocidadeAnimacao) % Bullet.BULLET_FRAMES;
+
+            const col = frame % Bullet.BULLET_COLS;
+            const row = Math.floor(frame / Bullet.BULLET_COLS);
 
             ctx.drawImage(
                 Bullet.sprite,
+                col * Bullet.BULLET_FRAME_SIZE, row * Bullet.BULLET_FRAME_SIZE, // recorte: coluna e linha
+                Bullet.BULLET_FRAME_SIZE, Bullet.BULLET_FRAME_SIZE,
                 -this.tamanhoSprite / 2,
                 -this.tamanhoSprite / 2,
                 this.tamanhoSprite,
