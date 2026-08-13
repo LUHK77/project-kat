@@ -26,6 +26,7 @@ import {
     jogoIniciado
 } from './ui.js';
 import { drawProps, updateProps } from './Props/Prop.js';
+import { drawLowHpWarning, drawVignette } from './utils/effects.js';
 
 /* Serve para suavizar a imagem quando é chamado,  
 porem no caso ele acaba dando um bloor na imagem, por isso sera destivado */
@@ -158,6 +159,8 @@ function gameLoop(timestamp) {
     player.weapon.draw();
     player.weapon.drawBarra();
     drawStones(player.x, player.y);
+    drawVignette();
+    drawLowHpWarning();
 
    
     player.drawHUD();
