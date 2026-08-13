@@ -58,6 +58,8 @@ export class Enemy {
 
         return bateuNoTerreno || bateuNoPlayer || colideComObjetosSolidos(x, y, this.size);
     }
+
+    getBulletSprite(){}
     // Atualiza a animação do inimigo, avançando o frame com base no tempo decorrido
     updateAnimacao(deltaTime) {
         this.animacao.timer += deltaTime * 60;

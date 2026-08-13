@@ -29,6 +29,7 @@ export class Gun {
         this.speedBullet = 2;
         this.knockback = 3;
         this.sprite = 0;
+        this.spriteBullet = "";
         this.spriteRecoil = 0;
         this.cadencia = 0;
         this.ultimoTiro = 0;
@@ -49,6 +50,8 @@ export class Gun {
             velocidade: 2,
         };
     }
+
+    getBulletSprite(){}
 
     // Recarrega a arma, iniciando o processo de recarga se necessário
     recarregar() {
@@ -75,7 +78,7 @@ export class Gun {
         this.animacao.timer = 0;
 
         // Cria uma bala na direção do ângulo fornecido, com o dano e tamanho especificados
-        spawnBullet(angulo, this.dano, this.speedBullet, this.tamanhoBalas, this.knockback);
+        spawnBullet(angulo, this.dano, this.speedBullet, this.spriteBullet,this.tamanhoBalas, this.knockback);
 
         if (this.balas <= 0) {
             this.recarregar();

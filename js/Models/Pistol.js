@@ -7,11 +7,13 @@ export class Pistol extends Gun {
     static spriteIdle   = new Image();
     static framesShot   = new Image();
     static framesReload = new Image();
+    static frameBullet = new Image();
 
     static carregarSprites() {
         Pistol.spriteIdle.src   = `assets/guns/pistol/pistolD.png`;
         Pistol.framesReload.src = `assets/guns/pistol/pistolReload/PistolReload.webp`;
         Pistol.framesShot.src   = `assets/guns/pistol/pistolShot/PistolShoot.webp`;
+        Pistol.frameBullet.src = `assets/guns/bullet/bulletNew.webp`;
     }
 
     constructor() {
@@ -24,6 +26,8 @@ export class Pistol extends Gun {
         this.maxBalas    = 6;
         this.tempoRecarga = 1500;
         this.tamanhoBalas = 30;
+
+        this.spriteBullet = Pistol.frameBullet;
 
         // Colunas e tamanho de frame de cada spritesheet
         this.colunas = 3; // ajusta conforme sua spritesheet

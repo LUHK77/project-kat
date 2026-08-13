@@ -7,11 +7,13 @@ export class Smg extends Gun {
     static spriteIdle   = new Image();
     static framesShot   = new Image();
     static framesReload = new Image();
+    static frameBullet = new Image();
 
     static carregarSprites() {
         Smg.spriteIdle.src   = `assets/guns/smg/SMGIdle.webp`;
         Smg.framesReload.src = `assets/guns/smg/smgReload/SMGReload.webp`;
         Smg.framesShot.src   = `assets/guns/smg/smgShoot/SMGShoot.webp`;
+        Smg.frameBullet.src = `assets/guns/bullet/bulletNew.webp`;
     }
 
     constructor() {
@@ -24,6 +26,8 @@ export class Smg extends Gun {
         this.maxBalas    = 20;
         this.tempoRecarga = 2500;
         this.tamanhoBalas = 40;
+
+        this.spriteBullet = Smg.frameBullet;
 
         // Colunas e tamanho de frame de cada spritesheet
         this.colunas = 3; // ajusta conforme sua spritesheet

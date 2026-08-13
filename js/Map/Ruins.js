@@ -99,10 +99,10 @@ export class Ruins {
             const x = player.x + Math.cos(angulo) * distancia;
             const y = player.y + Math.sin(angulo) * distancia;
 
-            const dog = new SkeletonFlame(x, y);
+            const e = new SkeletonFlame(x, y);
 
-            enemies.push(dog);
-            this.enemies.push(dog);
+            enemies.push(e);
+            this.enemies.push(e);
         }
     }
 

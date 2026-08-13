@@ -5,12 +5,10 @@ import { player } from './Player.js';
 import { enemies } from './Enemy.js';
 // A classe Bullet representa uma bala no jogo, com propriedades e métodos para movimentação, colisão e desenho
 export class Bullet {
-    static sprite = new Image();
     static impactSprite = new Image();
 
     // Carrega os sprites da bala e do impacto, definindo as imagens que serão usadas para desenhar na tela
     static carregarSprite() {
-        Bullet.sprite.src = `assets/guns/bullet/bulletNew.webp`;
         Bullet.impactSprite.src = `assets/guns/bullet/bulletImpact.webp`;
     }
 
@@ -29,6 +27,7 @@ export class Bullet {
         angulo,
         dano,
         speed,
+        spriteB,
         tamanhoSprite,
         knockback,
         owner = "player"
@@ -40,6 +39,7 @@ export class Bullet {
         this.dy = Math.sin(angulo);
         this.velocidade = speed;
         this.tamanho = 8;
+        this.spriteB = spriteB;
         this.tamanhoSprite = tamanhoSprite || 40;
         this.knockback = knockback;
 
@@ -117,6 +117,10 @@ export class Bullet {
 
                 if (dist < player.size / 2 + this.tamanho) {
                     const agora = Date.now();
+                    const forcaE = (this.knockback * 50) / player.size;
+                        player.knockbackVX += this.dx * forcaE;
+                        player.knockbackVY += this.dy * forcaE;
+                        
                     player.hp -= this.dano;
 
                     this.acertou = true;
@@ -189,7 +193,7 @@ export class Bullet {
             const row = Math.floor(frame / Bullet.BULLET_COLS);
 
             ctx.drawImage(
-                Bullet.sprite,
+                this.spriteB,
                 col * Bullet.BULLET_FRAME_SIZE, row * Bullet.BULLET_FRAME_SIZE, // recorte: coluna e linha
                 Bullet.BULLET_FRAME_SIZE, Bullet.BULLET_FRAME_SIZE,
                 -this.tamanhoSprite / 2,
@@ -214,7 +218,7 @@ function bateuMapa(x, y, tamanho) {
     return ehSolido(col, row) || colideComObjetosSolidos(x, y, tamanho);
 }
 // Função para spawnar uma bala do jogador, criando uma nova instância da classe Bullet e adicionando-a à lista de balas
-export function spawnBullet(angulo,dano,speed,tamanhoSprite, knockback) {
+export function spawnBullet(angulo,dano,speed,spriteB ,tamanhoSprite, knockback) {
     bullets.push(
         new Bullet(
             player.x + Math.cos(angulo) * 20,
@@ -222,6 +226,7 @@ export function spawnBullet(angulo,dano,speed,tamanhoSprite, knockback) {
             angulo,
             dano + player.ataque,
             speed,
+            spriteB,
             tamanhoSprite,
             knockback,
             "player"
@@ -235,6 +240,7 @@ export function spawnEnemyBullet(
     angulo,
     dano = 10,
     speed,
+    spriteB,
     tamanhoSprite = 40,
     knockback,
 ) {
@@ -245,6 +251,7 @@ export function spawnEnemyBullet(
             angulo,
             dano,
             speed,
+            spriteB,
             tamanhoSprite,
             knockback,
             "enemy"
