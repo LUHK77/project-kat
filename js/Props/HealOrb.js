@@ -6,7 +6,7 @@ import { Prop } from "./Prop.js";
 
 const FRAME_W = 32;
 const FRAME_H = 32;
-const FRAME_COLS = 3;
+const FRAME_COLS = 2;
 const TOTAL_FRAMES = 6;
 
 export class HealOrb extends Prop {

@@ -13,7 +13,7 @@ export class ZombieBird extends Enemy {
     static carregarSprites() {
         ZombieBird.frames.src    = `assets/enemys/zombie_bird/move/Bird_ZombieMove.webp`;
         ZombieBird.framesDano.src = `assets/enemys/zombie_bird/hit/Bird_ZombieHit.webp`;
-        ZombieBird.frameBullet.src = `assets/guns/bullet/semente.webp`
+        ZombieBird.frameBullet.src = `assets/guns/bullet/bulletEnemy.webp`
     }
     // Define os atributos específicos do inimigo Zombie Bird
     constructor(x, y) {

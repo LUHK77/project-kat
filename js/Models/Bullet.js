@@ -241,7 +241,7 @@ export function spawnEnemyBullet(
     dano = 10,
     speed,
     spriteB,
-    tamanhoSprite = 40,
+    tamanhoSprite = 20,
     knockback,
 ) {
     bullets.push(

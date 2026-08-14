@@ -67,7 +67,7 @@ export function geraBloco(tileX, tileY) {
     // Só metade dos chunks terão pedra
     if (seed % 2 !== 0) return "grass";
 
-    // Posição da pedra dentro do chunk (determinística pela seed)
+    // Posição do object dentro do chunk (determinística pela seed)
     const objectX = seed % chunkSize;
     const objectY = Math.floor(seed / chunkSize) % chunkSize;
 
@@ -101,8 +101,8 @@ export function drawStones(playerX, playerY) {
 
     const firstTileX = Math.floor(camX / blocoTamanho);
     const firstTileY = Math.floor(camY / blocoTamanho);
-    const lastTileX  = firstTileX + Math.ceil(LARGURA / blocoTamanho) + 1;
-    const lastTileY  = firstTileY + Math.ceil(ALTURA  / blocoTamanho) + 1;
+    const lastTileX  = firstTileX + Math.ceil(LARGURA / blocoTamanho);
+    const lastTileY  = firstTileY + Math.ceil(ALTURA  / blocoTamanho);
 
     for (let y = firstTileY; y <= lastTileY; y++) {
         for (let x = firstTileX; x <= lastTileX; x++) {

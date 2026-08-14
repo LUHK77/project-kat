@@ -76,6 +76,8 @@ export class Player {
     spriteBase(){
         return Player.SPRITESHEETS()[ESTADOS.IDLE];
     }
+
+
     
     // metodo que realiza o upgrade no player permitindo aumentar seus atributos
     levelUp() {
@@ -124,10 +126,13 @@ export class Player {
 
     // metodo que atualiza a posição do player de acordo com sua movimentação
     update(dt) {
-        const vel = this.speed * 200 * dt;
+        let speed = (!player.weapon.segurando) ? this.speed : this.speed * 0.5;
+        const vel = speed * 200 * dt;
 
         let dx = 0;
         let dy = 0;
+
+        
 
         if (this.keys["w"] || this.keys["arrowup"])    dy--;
         if (this.keys["s"] || this.keys["arrowdown"])  dy++;
@@ -145,6 +150,7 @@ export class Player {
 
         const ny = this.y + dy * vel;
         if (!this.bateu(this.x, ny)) this.y = ny;
+
 
         // aplica knockback, se houver
         if (Math.abs(this.knockbackVX) > 0.01 || Math.abs(this.knockbackVY) > 0.01) {
