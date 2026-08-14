@@ -47,6 +47,7 @@ export class Player {
         this.knockbackVY = 0;
 
         this.speed = 1;
+        this.speedAtual = this.speed;
         this.hp = 100;
         this.maxHp = 100;
         this.ataque = 10;
@@ -126,8 +127,16 @@ export class Player {
 
     // metodo que atualiza a posição do player de acordo com sua movimentação
     update(dt) {
-        let speed = (!player.weapon.segurando || (player.weapon.recarregando && player.weapon.segurando)) ? this.speed : this.speed * 0.5;
-        const vel = speed * 200 * dt;
+
+        //Verifica se o player esta atirando
+        const atirando = this.weapon.segurando && !this.weapon.recarregando;
+        const speedAlvo = atirando ? this.speed * 0.5 : this.speed;
+
+        //Suavização da velocidade
+        const suavizacao = 8;
+        this.speedAtual += (speedAlvo - this.speedAtual) * Math.min(1, suavizacao * dt);
+
+        const vel = this.speedAtual * 250 * dt;
 
         let dx = 0;
         let dy = 0;
