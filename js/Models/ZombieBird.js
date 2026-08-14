@@ -28,7 +28,7 @@ export class ZombieBird extends Enemy {
         this.spriteBullet = ZombieBird.frameBullet;
 
         // ataque à distância
-        this.attackCooldown = 2000; // 2 segundos
+        this.attackCooldown = 2000; 
         this.lastAttack = 0;
 
         // distância máxima para atacar

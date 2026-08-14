@@ -126,7 +126,7 @@ export class Player {
 
     // metodo que atualiza a posição do player de acordo com sua movimentação
     update(dt) {
-        let speed = (!player.weapon.segurando) ? this.speed : this.speed * 0.5;
+        let speed = (!player.weapon.segurando || (player.weapon.recarregando && player.weapon.segurando)) ? this.speed : this.speed * 0.5;
         const vel = speed * 200 * dt;
 
         let dx = 0;

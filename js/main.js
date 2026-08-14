@@ -151,9 +151,9 @@ function gameLoop(timestamp) {
     drawMap(player.x, player.y);
     drawMapObjects();
 
+    drawProps();
     drawEnemies();
     drawBullets();
-    drawProps();
 
     player.draw(mouse);
     player.weapon.draw();
