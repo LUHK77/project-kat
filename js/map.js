@@ -212,7 +212,6 @@ export function drawMap(playerX, playerY) {
 
                 drawDecoracoes(ctx, playerX, playerY, mapSeed, LARGURA, ALTURA, blocoTamanho);
             }
-            // "object" (pedra/árvore) não desenha aqui — já é o drawStones()
         }
     }
 }
