@@ -79,7 +79,7 @@ export function updateTimer(spawnEnemy) {
     // Desconta o tempo total que ficou pausado
     tJogo = Math.floor((Date.now() - tInicio - tTotalPausado) / 1000);
 
-    const n = Math.max(500, 1500 - Math.floor(tJogo / 60) * 3000);
+    const n = Math.max(500, 3000 - Math.floor(tJogo / 60) * 3000);
 
     if (n !== taxaSpawn) {
         taxaSpawn = n;

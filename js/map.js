@@ -1,4 +1,5 @@
 // js/map.js
+import { drawDecoracoes } from './Map/Decoracoes.js';
 import { Stone } from './Map/Stone.js';
 import { Tree } from './Map/Tree.js';
 import { hash2D, novaSeed } from './utils/hash.js';
@@ -31,7 +32,7 @@ ctx.scale(dpr, dpr);
 
 // Sprites das gramas
 const imgFloor = new Image();
-imgFloor.src = "assets/map/soloFloor4.webp";
+imgFloor.src = "assets/map/grass/soloFloor4.webp";
 
 const FLOOR_FRAME_SIZE = 32;
 const FLOOR_FRAME_COLS = 2;
@@ -189,8 +190,8 @@ export function drawMap(playerX, playerY) {
     for (let y = firstTileY; y <= lastTileY; y++) {
         for (let x = firstTileX; x <= lastTileX; x++) {
 
-            const screenX = x * blocoTamanho - camX;
-            const screenY = y * blocoTamanho - camY;
+            const screenX = Math.round(x * blocoTamanho - camX);
+            const screenY = Math.round(y * blocoTamanho - camY);
             const tile = geraBloco(x, y);
 
             if (tile === "grass") {
@@ -206,8 +207,10 @@ export function drawMap(playerX, playerY) {
                     FLOOR_FRAME_SIZE,
                     FLOOR_FRAME_SIZE,
                     screenX, screenY,
-                    blocoTamanho * 1.1, blocoTamanho * 1.1
+                    blocoTamanho, blocoTamanho
                 );
+
+                drawDecoracoes(ctx, playerX, playerY, mapSeed, LARGURA, ALTURA, blocoTamanho);
             }
             // "object" (pedra/árvore) não desenha aqui — já é o drawStones()
         }
