@@ -103,7 +103,7 @@ export class Bullet {
                         }
 
                         this.acertou = true;
-                        this.timerDano = 10;
+                        this.timerDano = 40;
                         break;
                     }
                 }
@@ -125,7 +125,7 @@ export class Bullet {
 
                     this.acertou = true;
                     player.ultimoDano = agora;
-                    this.timerDano = 10;
+                    this.timerDano = 40;
                     break;
                 }
             }
@@ -135,7 +135,8 @@ export class Bullet {
     }
 
     drawImpactBullet(camX, camY) {
-        const progresso = 1 - (this.timerDano / 30); // 0 -> 1 ao longo do tempo
+        const progresso = 1 - (this.timerDano / 40);
+        const velocidadeAnimação = 2.2
 
         // qual frame mostrar (0 a 5), sem passar do último
         const frame = Math.min(
@@ -144,7 +145,7 @@ export class Bullet {
         );
 
         const col = frame % Bullet.IMPACT_COLS;
-        const row = Math.floor(frame / Bullet.IMPACT_COLS);
+        const row = Math.floor(frame / Bullet.IMPACT_COLS * velocidadeAnimação);
 
         const screenX = this.x - camX;
         const screenY = this.y - camY;

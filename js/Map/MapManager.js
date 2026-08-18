@@ -33,6 +33,8 @@ function tentarGerarRuina(chunkX, chunkY) {
     const tileX = chunkX * ruinChunkSize + localX;
     const tileY = chunkY * ruinChunkSize + localY;
 
+    
+
     rooms.push(new Ruins(tileX, tileY, seed));
 }
 
@@ -50,16 +52,31 @@ function atualizarChunksProximos() {
     }
 }
 
+const raioAtivo = ruinChunkSize * blocoTamanho * 2; // ajuste ao gosto
+
+function estaProxima(room) {
+    const dx = room.x - player.x;
+    const dy = room.y - player.y;
+    return Math.hypot(dx, dy) < raioAtivo;
+}
+
 export function updateMap() {
     atualizarChunksProximos();
 
-    for (const room of rooms) {
-        room.update();
+    for (let i = rooms.length - 1; i >= 0; i--) {
+        const room = rooms[i];
+        if (room.estado === 2 /* CONCLUIDA */ && !estaProxima(room, raioAtivo * 3)) {
+            rooms.splice(i, 1); // remove de vez; chunksGerados mantém o registro pra não regenerar
+        } else if (estaProxima(room)) {
+            room.update();
+        }
     }
 }
 
 export function drawMapObjects() {
     for (const room of rooms) {
-        room.draw();
+        if (estaProxima(room)) {
+            room.draw();
+        }
     }
 }

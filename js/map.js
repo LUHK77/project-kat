@@ -209,9 +209,8 @@ export function drawMap(playerX, playerY) {
                     screenX, screenY,
                     blocoTamanho, blocoTamanho
                 );
-
-                drawDecoracoes(ctx, playerX, playerY, mapSeed, LARGURA, ALTURA, blocoTamanho);
             }
         }
     }
+    drawDecoracoes(ctx, playerX, playerY, mapSeed, LARGURA, ALTURA, blocoTamanho);
 }
