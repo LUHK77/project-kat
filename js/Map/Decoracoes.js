@@ -13,33 +13,6 @@ imgOssos.src = "assets/map/detalhamento/details.webp";
 imgFlores.src = "assets/map/detalhamento/camposFlores.webp";
 imgGramaAlta.src = "assets/map/detalhamento/gramaAlta.webp";
 
-// ============================================================
-// VERSÃO ESPELHADA PRÉ-RENDERIZADA DA GRAMA ALTA
-// ============================================================
-//
-// Antes: cada tufo espelhado custava save()+translate()+scale()+
-// drawImage()+restore() — 5 operações de canvas por tufo, multiplicado
-// por vários tufos sobrepostos em cada moita, todo frame.
-//
-// Agora: espelha a spritesheet inteira UMA VEZ (quando a imagem
-// termina de carregar) e guarda num canvas offscreen. No draw, só
-// escolhe "normal" ou "espelhada" e chama drawImage direto.
-// ============================================================
-
-let imgGramaAltaEspelhada = null;
-
-imgGramaAlta.onload = () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = imgGramaAlta.width;
-    canvas.height = imgGramaAlta.height;
-
-    const c = canvas.getContext("2d");
-    c.translate(canvas.width, 0);
-    c.scale(-1, 1);
-    c.drawImage(imgGramaAlta, 0, 0);
-
-    imgGramaAltaEspelhada = canvas;
-};
 
 // ============================================================
 // CONFIGURAÇÃO DE CADA TIPO
@@ -63,13 +36,23 @@ const DECORACOES = [
         seedOffset: 7101
     },
     {
+        nome: "gramaAltta",
+        spritesheet: imgGramaAlta,
+        numFrames: 5,
+        frameSize: 32,
+        tamanhoTiles: 1.2,
+        chunkSize: 10,
+        chancePorMil: 800,
+        seedOffset: 7111
+    },
+    {
         nome: "ossos",
         spritesheet: imgOssos,
         numFrames: 8,
         frameSize: 32,
         tamanhoTiles: 1,
         chunkSize: 10,       // era 6
-        chancePorMil: 100,   // era 300
+        chancePorMil: 400,   // era 300
         seedOffset: 7001
     }
 ];
