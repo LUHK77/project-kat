@@ -10,7 +10,7 @@ const imgFlores = new Image();
 const imgGramaAlta = new Image();
 
 imgOssos.src = "assets/map/detalhamento/details.webp";
-imgFlores.src = "assets/map/detalhamento/camposFlores.webp";
+imgFlores.src = "assets/map/detalhamento/flowers.webp";
 imgGramaAlta.src = "assets/map/detalhamento/gramaAlta.webp";
 
 
@@ -29,10 +29,10 @@ const DECORACOES = [
         nome: "flores",
         spritesheet: imgFlores,
         numFrames: 3,
-        frameSize: 128,
-        tamanhoTiles: 5,
+        frameSize: 32,
+        tamanhoTiles: 1.5,
         chunkSize: 10,
-        chancePorMil: 10,
+        chancePorMil: 200,
         seedOffset: 7101
     },
     {
