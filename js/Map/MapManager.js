@@ -3,14 +3,14 @@
 import { Ruins } from "./Ruins.js";
 import { player } from "../Models/Player.js";
 import { blocoTamanho } from "../map.js";
-import { hash2D } from "../utils/hash.js";
+import { hash2D, novaSeed } from "../utils/hash.js";
 
-const ruinChunkSize = 60;      // tiles por super-chunk (bem maior que o das pedras)
-const probabilidade = 8;      // 1 em 20 chunks tem ruína (~5%)
-const seedRuinas = 987654321;  // seed fixa só pras ruínas, separada da seed do mundo
+const ruinChunkSize = 60;      
+const probabilidade = 4;  
+const seedRuinas = novaSeed();
 
 const rooms = [];
-const chunksGerados = new Map(); // cache: "chunkX,chunkY" -> true (evita regenerar)
+const chunksGerados = new Map(); 
 
 function tentarGerarRuina(chunkX, chunkY) {
 
@@ -43,7 +43,7 @@ function atualizarChunksProximos() {
     const chunkAtualX = Math.floor(player.x / blocoTamanho / ruinChunkSize);
     const chunkAtualY = Math.floor(player.y / blocoTamanho / ruinChunkSize);
 
-    const raio = 1; // checa o chunk atual + os 8 vizinhos
+    const raio = 1; 
 
     for (let cy = chunkAtualY - raio; cy <= chunkAtualY + raio; cy++) {
         for (let cx = chunkAtualX - raio; cx <= chunkAtualX + raio; cx++) {
@@ -65,7 +65,7 @@ export function updateMap() {
 
     for (let i = rooms.length - 1; i >= 0; i--) {
         const room = rooms[i];
-        if (room.estado === 2 /* CONCLUIDA */ && !estaProxima(room, raioAtivo * 3)) {
+        if (room.estado === 2 && !estaProxima(room, raioAtivo * 3)) {
             rooms.splice(i, 1); // remove de vez; chunksGerados mantém o registro pra não regenerar
         } else if (estaProxima(room)) {
             room.update();

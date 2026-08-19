@@ -1,14 +1,12 @@
 // js/Map/Ruins.js
 
-import { ctx, blocoTamanho, ALTURA, LARGURA, registrarAreaEspecial } from "../map.js";
 import { player } from "../Models/Player.js";
 import { enemies } from "../Models/Enemy.js";
-import { hash2D, novaSeed } from "../utils/hash.js";
 import { Chest } from "./Chest.js";
 import { SkeletonFlame } from "../Models/SkeletonFlame.js";
 import { WeaponDrop } from "../Props/WeaponDrop.js";
 import { props } from "../Props/Prop.js";
-import { gerarAreas } from "../utils/gerarAreas.js";
+import { Room } from "./Room.js";
 
 const ESTADO = {
     ESPERANDO: 0,
@@ -16,43 +14,25 @@ const ESTADO = {
     CONCLUIDA: 2
 };
 
-const sala = gerarAreas();
-
-export class Ruins {
+export class Ruins extends Room {
 
     static floor = new Image();
 
     static carregarAssets() {
-        Ruins.floor.src = "assets/map/ruinas/stoneFloor.webp";
+        Ruins.floor.src = "assets/map/ruinas/stoneFloor2.webp";
     }
 
-    constructor(tileX, tileY, seed) {
+    getFloorImage() {
+        return Ruins.floor;
+    }
 
-        // tamanho da sala (em tiles)
-        this.tilesX = sala.largura;
-        this.tilesY = sala.altura;
-        this.tiles = sala.tiles;
-        this.seed;
+    constructor(tileX, tileY) {
 
-        // posição (em pixels)
-        this.x = tileX * blocoTamanho;
-        this.y = tileY * blocoTamanho;
+        super(tileX, tileY);
 
-        this.width = this.tilesX * blocoTamanho;
-        this.height = this.tilesY * blocoTamanho;
-
-        registrarAreaEspecial(tileX, tileY, this.tilesX, this.tilesY, this);
-
-        // estado da sala
         this.estado = ESTADO.ESPERANDO;
-
-        // inimigos pertencentes à sala
         this.enemies = [];
 
-        // seed para variar o piso
-        this.seed = novaSeed();
-
-        // baú no centro da sala
         const chestX = this.x + this.width / 2;
         const chestY = this.y + this.height / 2;
 
@@ -113,61 +93,20 @@ export class Ruins {
         if (this.estado !== ESTADO.COMBATE)
             return;
 
-        // Remove da lista da sala quem já morreu
         this.enemies = this.enemies.filter(enemy =>
             enemies.includes(enemy)
         );
+
         if (this.enemies.length === 0) {
-
             this.estado = ESTADO.CONCLUIDA;
-
             this.chest.abrir();
         }
     }
 
-    drawFloor() {
-
-    const camX = player.x - LARGURA / 2;
-    const camY = player.y - ALTURA / 2;
-
-    for (let row = 0; row < this.tilesY; row++) {
-
-        for (let col = 0; col < this.tilesX; col++) {
-
-            if (!this.tiles[row][col])
-                continue; // pula os cantos "removidos"
-
-            const worldX = this.x + col * blocoTamanho;
-            const worldY = this.y + row * blocoTamanho;
-
-            const screenX = worldX - camX;
-            const screenY = worldY - camY;
-
-            const frame = hash2D(col, row, this.seed) % 3;
-            const frameCol = frame % 2;
-            const frameRow = Math.floor(frame / 2);
-
-            ctx.drawImage(
-                Ruins.floor,
-                frameCol * 32,
-                frameRow * 32,
-                32,
-                32,
-                screenX,
-                screenY,
-                blocoTamanho,
-                blocoTamanho
-            );
-        }
-    }
-}
-
     draw() {
         this.drawFloor();
         this.chest.draw();
-
     }
-
 }
 
 Ruins.carregarAssets();

@@ -58,6 +58,17 @@ export function geraBloco(tileX, tileY) {
     // Área segura ao redor do spawn
     if (Math.abs(tileX) <= 2 && Math.abs(tileY) <= 2) return "grass";
 
+    // Dentro de uma sala especial: os objetos ali são controlados pela própria sala,
+    // o terreno procedural nunca deve gerar pedra/árvore aqui dentro
+    for (const area of areasEspeciais) {
+        if (
+            tileX >= area.tileX && tileX < area.tileX + area.widthTiles &&
+            tileY >= area.tileY && tileY < area.tileY + area.heightTiles
+        ) {
+            return "grass";
+        }
+    }
+
     // Descobre em qual chunk esse tile está
     const chunkX = Math.floor(tileX / chunkSize);
     const chunkY = Math.floor(tileY / chunkSize);
@@ -100,10 +111,12 @@ export function drawStones(playerX, playerY) {
     const camX = playerX - LARGURA / 2;
     const camY = playerY - ALTURA  / 2;
 
-    const firstTileX = Math.floor(camX / blocoTamanho);
-    const firstTileY = Math.floor(camY / blocoTamanho);
-    const lastTileX  = firstTileX + Math.ceil(LARGURA / blocoTamanho);
-    const lastTileY  = firstTileY + Math.ceil(ALTURA  / blocoTamanho);
+    const margem = 2;
+
+    const firstTileX = Math.floor(camX / blocoTamanho) - margem;
+    const firstTileY = Math.floor(camY / blocoTamanho) - margem;
+    const lastTileX  = firstTileX + Math.ceil(LARGURA / blocoTamanho) + margem * 2;
+    const lastTileY  = firstTileY + Math.ceil(ALTURA  / blocoTamanho) + margem * 2;
 
     for (let y = firstTileY; y <= lastTileY; y++) {
         for (let x = firstTileX; x <= lastTileX; x++) {
